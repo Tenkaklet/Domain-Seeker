@@ -5,7 +5,7 @@ export default class Keywords extends Command {
         check: Args.string({description: 'Input your keywords', required: true}),
     }
 
-    static override description = "Discover different domains from your keywords";
+    static readonly description = "Discover different domains from your keywords";
 
     async run(): Promise<void> {
         const {args} = await this.parse(Keywords)
