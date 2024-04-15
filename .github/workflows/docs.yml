@@ -1,15 +1,10 @@
-name: version, tag and github release
+name: "Making Documentation"
 
 on:
   push:
     branches: [main]
 
 jobs:
-  release:
-    uses: actions/checkout@v4
-    with:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   docs:
     name: Publish typedoc documentation
     runs-on: ubuntu-latest
