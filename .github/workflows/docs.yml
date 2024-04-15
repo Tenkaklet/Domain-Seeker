@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '20.x'
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       - name: Generate typedoc
         run: npm run typedoc
       - name: Deploy to GitHub Pages
