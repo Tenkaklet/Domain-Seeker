@@ -8,7 +8,7 @@ on:
 jobs:
   release:
     uses: oclif/github-workflows/.github/workflows/githubRelease.yml@main
-    secrets: inherit
+    secrets: {{secrets.GITHUB_TOKEN}}
 
   # most repos won't use this
   # depends on previous job to avoid git collisions, not for any functionality reason
