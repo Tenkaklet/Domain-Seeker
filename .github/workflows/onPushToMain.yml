@@ -1,4 +1,3 @@
-# test
 name: version, tag and github release
 
 on:
@@ -7,12 +6,25 @@ on:
 
 jobs:
   release:
-    uses: oclif/github-workflows/.github/workflows/githubRelease.yml@main
-    secrets: {{secrets.GITHUB_TOKEN}}
+    uses: actions/checkout@v4
+    with:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # most repos won't use this
-  # depends on previous job to avoid git collisions, not for any functionality reason
-  # docs:
-  #   uses: salesforcecli/github-workflows/.github/workflows/publishTypedoc.yml@main
-  #   secrets: inherit
-  #   needs: release
+  docs:
+    name: Publish typedoc documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate typedoc
+        run: npm run typedoc
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }},
+          publish_dir: "./dist/docs"
