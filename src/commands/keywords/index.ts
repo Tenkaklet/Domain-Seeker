@@ -1,4 +1,5 @@
 import { Command, Args, Flags } from "@oclif/core";
+import { fetchWord } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -13,7 +14,7 @@ export default class Keywords extends Command {
 
   async run(): Promise<void> {
     await this.ask();
- }
+  }
 
   spinner(message: string) {
     const spinner = ora(message).start();
@@ -26,10 +27,10 @@ export default class Keywords extends Command {
     spinner.stop();
   }
 
-   /**
- * Prompts the user to enter their keywords.
- * @returns The user's keywords.
- */
+  /**
+* Prompts the user to enter their keywords.
+* @returns The user's keywords.
+*/
   async ask() {
     const questions = [
       {
@@ -44,9 +45,20 @@ export default class Keywords extends Command {
         }
       }
     ];
-    const keywordsArray = await inquirer.prompt(questions);
-    const ansewrs = Object.keys(keywordsArray).map(key => keywordsArray[key]);
-    this.spinner(chalk.greenBright(`Keywords: ${ansewrs}`));
-    return keywordsArray;
+    const keywordsObject = await inquirer.prompt(questions);
+    let keywords: unknown;
+    for (const word of Object.values(keywordsObject)) {
+      if (typeof word === 'string') {
+        keywords = word;
+        // replace commas with spaces
+        (word ).replace(/,/g, '');
+      }
+    }
+
+    for (let key in keywordsObject) {
+      if (keywordsObject.hasOwnProperty(key)) {
+        keywordsObject[key] = keywordsObject[key].trim();
+      }
+    }
   }
 }
