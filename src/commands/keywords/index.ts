@@ -12,8 +12,7 @@ export default class Keywords extends Command {
   static readonly description = "Discover different domains from your keywords";
 
   async run(): Promise<void> {
-    this.spinner('Welcome to Domain Seeker.');
-    this.ask();
+    await this.ask();
  }
 
   spinner(message: string) {
@@ -25,15 +24,12 @@ export default class Keywords extends Command {
     }, 500);
 
     spinner.stop();
-    this.note('Working');
   }
 
-  note(msg:string) {
-    this.log(`${chalk.red('Welcome to ') } ${chalk.green('Domain') } ${chalk.yellow('Seeker') }`);
-  }
-
-  // Inquier array of keywords.
-  a
+   /**
+ * Prompts the user to enter their keywords.
+ * @returns The user's keywords.
+ */
   async ask() {
     const questions = [
       {
@@ -42,13 +38,15 @@ export default class Keywords extends Command {
         message: 'Enter your keywords',
         validate: (value: string) => {
           if (value.length < 1) {
-            return 'Please enter keywords';
+            return 'Please enter some keywords';
           }
           return true;
         }
       }
     ];
-    const answers = await inquirer.prompt(questions);
-    return answers;
+    const keywordsArray = await inquirer.prompt(questions);
+    const ansewrs = Object.keys(keywordsArray).map(key => keywordsArray[key]);
+    this.spinner(chalk.greenBright(`Keywords: ${ansewrs}`));
+    return keywordsArray;
   }
 }
