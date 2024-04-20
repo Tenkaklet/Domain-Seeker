@@ -51,13 +51,14 @@ export default class Keywords extends Command {
       if (typeof word === 'string') {
         keywords = word;
         // replace commas with spaces
-        (word ).replace(/,/g, '');
+        keywords = word.replace(/,/g, ' ');
       }
     }
 
     for (let key in keywordsObject) {
       if (keywordsObject.hasOwnProperty(key)) {
         keywordsObject[key] = keywordsObject[key].trim();
+        this.log(chalk.cyan(keywordsObject[key]));
       }
     }
   }
