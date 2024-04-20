@@ -3,9 +3,13 @@ import { fetchWord } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
-
+import { DomainWords } from "../../interfaces.js";
+import { iterateArrayWords } from "../../helpers.js";
+import TtyTable from "tty-table";
 
 export default class Keywords extends Command {
+  domainKeywords: string = '';
+  suggestedWords: string[] = [];
 
   // NOTE: domain-seeker keywords check is to instantiate inquirer and the main application.
   // We Begin with some welcome message and then run the inquirer application.
@@ -58,8 +62,25 @@ export default class Keywords extends Command {
     for (let key in keywordsObject) {
       if (keywordsObject.hasOwnProperty(key)) {
         keywordsObject[key] = keywordsObject[key].trim();
-        this.log(chalk.cyan(keywordsObject[key]));
+        let words: string = keywordsObject[key].replace(/,/g, '+');
+        this.log(chalk.green(words));
+        this.domainKeywords = words;
       }
     }
+
+    this.getDomainKeywords(this.domainKeywords);
+    
+  }
+
+  getDomainKeywords(keywords: string) {
+    fetchWord(keywords).then((data: DomainWords[]) => {
+      const array = iterateArrayWords(data);
+      this.suggestedWords = array;
+      this.chooseWords(this.suggestedWords);
+    });
+  }
+
+  chooseWords(words: string[]) {
+    
   }
 }
