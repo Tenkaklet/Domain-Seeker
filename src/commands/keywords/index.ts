@@ -69,7 +69,7 @@ export default class Keywords extends Command {
     }
 
     this.getDomainKeywords(this.domainKeywords);
-    
+
   }
 
   getDomainKeywords(keywords: string) {
@@ -81,6 +81,16 @@ export default class Keywords extends Command {
   }
 
   chooseWords(words: string[]) {
-    
+
+    inquirer.prompt({ type: 'checkbox', message: 'Choose your keywords', name: 'chosen-keywords', choices: words }).then((answers) => {
+      const chosenKeywords = answers['chosen-keywords'];
+      // Ora spinner
+      const spinner = ora('Loading domains').start();
+      spinner.color = 'green';
+      setTimeout(() => {
+        spinner.succeed('Loading suggestions');
+      }, 500);
+      this.log(chalk.green(chosenKeywords));
+    })
   }
 }
