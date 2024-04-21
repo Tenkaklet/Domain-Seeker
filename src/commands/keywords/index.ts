@@ -63,7 +63,6 @@ export default class Keywords extends Command {
       if (keywordsObject.hasOwnProperty(key)) {
         keywordsObject[key] = keywordsObject[key].trim();
         let words: string = keywordsObject[key].replace(/,/g, '+');
-        this.log(chalk.green(words));
         this.domainKeywords = words;
       }
     }
@@ -81,16 +80,49 @@ export default class Keywords extends Command {
   }
 
   chooseWords(words: string[]) {
-
-    inquirer.prompt({ type: 'checkbox', message: 'Choose your keywords', name: 'chosen-keywords', choices: words }).then((answers) => {
+    inquirer.prompt({ type: 'checkbox', message: 'Choose your keywords that best fit your domain', name: 'chosen-keywords', choices: words }).then((answers) => {
       const chosenKeywords = answers['chosen-keywords'];
       // Ora spinner
       const spinner = ora('Loading domains').start();
       spinner.color = 'green';
       setTimeout(() => {
-        spinner.succeed('Loading suggestions');
+        spinner.succeed('Suggestions saved!');
       }, 500);
-      this.log(chalk.green(chosenKeywords));
+      this.createTable(chosenKeywords);
     })
   }
+
+  createTable(words: DomainWords[]) {
+    // chosenWords.push(word);
+    this.log('the domain keywords you chose are:' + chalk.greenBright(words));
+    const header = [
+      { value: 'Domain' },
+      { value: 'Available', header: 'available', formatter: (value: string) => chalk.greenBright(value) },
+    ];
+
+    // map through each item so a single word can be shown in item
+    const rows = [
+      ['facebook.com', 'Yes'],
+      ['google.com'],
+      ['instagram.com'],
+      ['twitter.com'],
+      ['youtube.com'],
+      ['linkedin.com'],
+    ];
+
+    const options = {
+      borderStyle: "solid",
+      borderColor: "green",
+      paddingBottom: 0,
+      headerAlign: "center",
+      headerColor: "green",
+      align: "center",
+      color: "white",
+      width: "80%"
+    }
+
+    const table = TtyTable(header, rows, [], options).render();
+    console.log(table);
+  }
+
 }

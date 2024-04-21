@@ -1,4 +1,7 @@
 export interface DomainWords {
-word: string;
+splice: (any);
+domain: string;
+word: string[];
 score: number;
+available: boolean;
 }
