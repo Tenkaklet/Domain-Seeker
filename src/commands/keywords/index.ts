@@ -93,22 +93,16 @@ export default class Keywords extends Command {
   }
 
   createTable(words: DomainWords[]) {
-    // chosenWords.push(word);
-    this.log('the domain keywords you chose are:' + chalk.greenBright(words));
+    this.log('words', words);
     const header = [
       { value: 'Domain' },
       { value: 'Available', header: 'available', formatter: (value: string) => chalk.greenBright(value) },
     ];
-
     // map through each item so a single word can be shown in item
-    const rows = [
-      ['facebook.com', 'Yes'],
-      ['google.com'],
-      ['instagram.com'],
-      ['twitter.com'],
-      ['youtube.com'],
-      ['linkedin.com'],
-    ];
+    const rows = words.map((word: DomainWords) => {
+      const array = [word];
+      return array;
+    });
 
     const options = {
       borderStyle: "solid",
@@ -118,8 +112,8 @@ export default class Keywords extends Command {
       headerColor: "green",
       align: "center",
       color: "white",
-      width: "80%"
-    }
+      width: "80%",
+    };
 
     const table = TtyTable(header, rows, [], options).render();
     console.log(table);
