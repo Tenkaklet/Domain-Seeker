@@ -31,31 +31,23 @@ export const fetchWord = async (word: string): Promise<any> => {
 
 export const searchDomains = async (domain: string): Promise<any> => {
     console.log('domain', domain);
-    
+    const url = `https://domainr.p.rapidapi.com/v2/search?mashape-key=${process.env.SMASH_KEY}&query=${domain}&registrar=dnsimple.com`;
     const options = {
         method: 'GET',
         headers: {
-            'x-rapidapi-key': process.env.SMASH_KEY ?? '',
-            'x-rapidapi-host': 'domainr.p.rapidapi.com'
+            'X-RapidAPI-Key': process.env.SMASH_KEY!,
+            'X-RapidAPI-Host': 'domainr.p.rapidapi.com'
         }
     };
 
     try {
-        const response = await fetch(`${searchAPIURL + '&domain='}${domain}&registrar=namecheap.com`, options);
-        if (!response.ok) {
-            throw new Error('Error: ' + response.statusText);
-        }
-        console.log('response', response);
-        
-        const data = await response.json();
-        console.log('data', data);
-        
-        return data;
+        const response = await fetch(url, options);
+        const result = await response.json();
+        return result;
     } catch (error) {
-        console.log('error', error);
-        throw error;
+        console.error(error);
     }
 }
 
 fetchWord(wordAPIURL);
-// searchDomains(searchAPIURL);
+

@@ -109,13 +109,20 @@ export default class Keywords extends Command {
     // loading spinner of org domains
     inquirer.prompt({ type: 'list', message: 'Are these keywords correct?', name: 'correct-keywords', choices: domain }).then((answers) => {
       console.log('correct keywords:', answers['correct-keywords']);
-      this.log('Ready to go');
+      const goodAnswers = answers['correct-keywords'];
+      this.getDomainNames(goodAnswers);
     });
-    // searchDomains(this.domainKeywords).then((data: string[]) => {
-    //   const array = iterateArrayWords(data);
-    //   this.suggestedWords = array;
-    //   console.log('domain ok', this.suggestedWords);
-    // });
+  }
+
+  getDomainNames(domain: string) {
+    // TODO: check if domain name is avaiable.
+    // TODO: if domain is available, show the cost of the domain.
+    searchDomains(domain).then((data: string[]) => {
+      // const array = iterateArrayWords(data);
+      // this.suggestedWords = array;
+      // console.log('domain ok', this.suggestedWords);
+      console.log('data ok', data);
+    });
   }
 
   createTable(words: DomainWords[]) {
