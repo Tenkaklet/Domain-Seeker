@@ -7,13 +7,15 @@ import { DomainWords } from "../../interfaces.js";
 import { iterateArrayWords } from "../../helpers.js";
 import TtyTable from "tty-table";
 import cliProgress from "cli-progress";
+import ansiColors from "ansi-colors";
+const colors = ansiColors;
 
 export default class Keywords extends Command {
   domainKeywords: string = '';
   suggestedWords: string[] = [];
   suggestedAvailableWords: string = '';
   chosenKeywords: string = '';
-  
+
 
   // NOTE: domain-seeker keywords check is to instantiate inquirer and the main application.
   // We Begin with some welcome message and then run the inquirer application.
@@ -94,7 +96,7 @@ export default class Keywords extends Command {
       this.checkIfWordsAreCorrect(chosenKeywords);
     });
   }
-  
+
 
   // Creates CLI progress bar and checks if the domain is available.
 
@@ -107,8 +109,7 @@ export default class Keywords extends Command {
   // TODO: if domain is available, show the cost of the domain.
   checkIfWordsAreCorrect(domain: string[]) {
     // loading spinner of org domains
-    inquirer.prompt({ type: 'list', message: 'Are these keywords correct?', name: 'correct-keywords', choices: domain }).then((answers) => {
-      console.log('correct keywords:', answers['correct-keywords']);
+    inquirer.prompt({ type: 'list', message: 'Please choose a suitable domain name', name: 'correct-keywords', choices: domain }).then((answers) => {
       const goodAnswers = answers['correct-keywords'];
       this.getDomainNames(goodAnswers);
     });
@@ -118,10 +119,27 @@ export default class Keywords extends Command {
     // TODO: check if domain name is avaiable.
     // TODO: if domain is available, show the cost of the domain.
     searchDomains(domain).then((data: string[]) => {
-      // const array = iterateArrayWords(data);
-      // this.suggestedWords = array;
-      // console.log('domain ok', this.suggestedWords);
-      console.log('data ok', data);
+      // console.log('data', data);
+      // create new progress bar
+      const b1 = new cliProgress.SingleBar({
+        format: 'Collecting potential domains |' + colors.cyan('{bar}') + '| {percentage}%',
+        barCompleteChar: '\u2588',
+        barIncompleteChar: '\u2591',
+        hideCursor: true
+      });
+
+      // start the progress bar
+      b1.start(100,0, {
+        speed: 'N/A'
+      });
+      
+      // update the progress bar
+      b1.increment();
+      b1.update(100);
+
+      // stop the progress bar
+      this.spinner('Search is complete');
+      b1.stop();
     });
   }
 
