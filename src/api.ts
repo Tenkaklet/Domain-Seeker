@@ -49,5 +49,24 @@ export const searchDomains = async (domain: string): Promise<any> => {
     }
 }
 
+export const checkIfDomainIsAvailable = async (domain: string): Promise<any> => {
+    const url = `https://domainr.p.rapidapi.com/v2/status?mashape-key=${process.env.SMASH_KEY}&domain=${domain}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            'X-RapidAPI-Key': process.env.SMASH_KEY!,
+            'X-RapidAPI-Host': 'domainr.p.rapidapi.com'
+        }
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 fetchWord(wordAPIURL);
 

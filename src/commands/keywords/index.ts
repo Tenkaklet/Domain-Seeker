@@ -1,5 +1,5 @@
 import { Command, Args, Flags } from "@oclif/core";
-import { fetchWord, searchDomains } from "../../api.js";
+import { fetchWord, searchDomains, checkIfDomainIsAvailable } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -102,11 +102,6 @@ export default class Keywords extends Command {
 
   // !NOTE: the user can only choose one word to then be able to retrieve the domain endings of .com or .org etc.
 
-
-
-
-  // TODO: check if domain name is avaiable.
-  // TODO: if domain is available, show the cost of the domain.
   checkIfWordsAreCorrect(domain: string[]) {
     // loading spinner of org domains
     inquirer.prompt({ type: 'list', message: 'Please choose a suitable domain name', name: 'correct-keywords', choices: domain }).then((answers) => {
@@ -116,10 +111,7 @@ export default class Keywords extends Command {
   }
 
   getDomainNames(domain: string) {
-    // TODO: check if domain name is avaiable.
-    // TODO: if domain is available, show the cost of the domain.
     searchDomains(domain).then((data: any) => {
-      // console.log('data', data.results);
       // create new progress bar
       const b1 = new cliProgress.SingleBar({
         format: 'Collecting potential domains |' + colors.cyan('{bar}') + '| {percentage}%',
@@ -130,7 +122,7 @@ export default class Keywords extends Command {
 
       // start the progress bar
       b1.start(100,0, {
-        speed: 'N/A'
+        speed: '50'
       });
       
       // update the progress bar
@@ -141,8 +133,16 @@ export default class Keywords extends Command {
       this.spinner('Search is complete');
       b1.stop();
 
-      this.createTable(data.results);
+      const domainNames = data.results.map((result: Domain) => result.domain);
+      this.checkIfDomainNameIsAvailable(domainNames);
+      
     });
+  }
+  checkIfDomainNameIsAvailable(domain: string[]) {
+    console.log('domain', domain);
+    
+    // TODO: check if domain name is avaiable.
+    // TODO: if domain is available, show the cost of the domain.
   }
 
   createTable(words: DomainWords[]) {
