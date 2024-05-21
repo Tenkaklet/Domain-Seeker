@@ -3,7 +3,7 @@ import { fetchWord, searchDomains } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
-import { DomainWords } from "../../interfaces.js";
+import { DomainWords, Domain } from "../../interfaces.js";
 import { iterateArrayWords } from "../../helpers.js";
 import TtyTable from "tty-table";
 import cliProgress from "cli-progress";
@@ -118,8 +118,8 @@ export default class Keywords extends Command {
   getDomainNames(domain: string) {
     // TODO: check if domain name is avaiable.
     // TODO: if domain is available, show the cost of the domain.
-    searchDomains(domain).then((data: string[]) => {
-      // console.log('data', data);
+    searchDomains(domain).then((data: any) => {
+      // console.log('data', data.results);
       // create new progress bar
       const b1 = new cliProgress.SingleBar({
         format: 'Collecting potential domains |' + colors.cyan('{bar}') + '| {percentage}%',
@@ -140,6 +140,8 @@ export default class Keywords extends Command {
       // stop the progress bar
       this.spinner('Search is complete');
       b1.stop();
+
+      this.createTable(data.results);
     });
   }
 
@@ -155,10 +157,15 @@ export default class Keywords extends Command {
       { value: 'Available', header: 'available', formatter: (value: string) => chalk.greenBright(value) },
     ];
     // map through each item so a single word can be shown in item
-    const rows = words.map((word: DomainWords) => {
+    const rows = words.map((word: Domain) => {
+      
       const array = [word];
+      
+      
       return array;
     });
+
+    this.log('rows', rows);
 
     const options = {
       borderStyle: "solid",
