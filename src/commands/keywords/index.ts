@@ -1,5 +1,5 @@
 import { Command, Args, Flags } from "@oclif/core";
-import { fetchWord, searchDomains, checkIfDomainIsAvailable } from "../../api.js";
+import { fetchWord, searchDomains, checkDomain } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -14,7 +14,7 @@ export default class Keywords extends Command {
   domainKeywords: string = '';
   suggestedWords: string[] = [];
   suggestedAvailableWords: string = '';
-  chosenKeywords: string = '';
+  chosenDomain: string = '';
 
 
   // NOTE: domain-seeker keywords check is to instantiate inquirer and the main application.
@@ -121,10 +121,10 @@ export default class Keywords extends Command {
       });
 
       // start the progress bar
-      b1.start(100,0, {
+      b1.start(100, 0, {
         speed: '50'
       });
-      
+
       // update the progress bar
       b1.increment();
       b1.update(100);
@@ -133,35 +133,44 @@ export default class Keywords extends Command {
       this.spinner('Search is complete');
       b1.stop();
 
-      const domainNames = data.results.map((result: Domain) => result.domain);
+      const domainNames = data.results.flatMap((result: Domain) => [{ domain: result.domain, url: result.registerURL }]);
       this.checkIfDomainNameIsAvailable(domainNames);
-      
+
     });
   }
-  checkIfDomainNameIsAvailable(domain: string[]) {
-    console.log('domain', domain);
-    
-    // TODO: check if domain name is avaiable.
-    // TODO: if domain is available, show the cost of the domain.
+  async checkIfDomainNameIsAvailable(domain: string[]) {
+    const domaminMap = domain.map((d: any) => d.domain);
+
+    for (const individualDomain of domaminMap) {
+      const domainStatus = await checkDomain(individualDomain);
+      console.log('domainStatus', domainStatus);
+      if (domainStatus.status[0].summary === 'active') {
+        this.spinner('Domain is available');
+        this.chosenDomain = individualDomain;
+        // !Fix: this needs to put the entire domain object into the method below.
+        // this.createTable(this.chosenDomain);
+        
+      }
+    }
   }
 
   createTable(words: DomainWords[]) {
-    // console.log('words', words);
+    console.log('words', words);
 
     // check words against API to see if they are available.
     // TODO: CLI progress bar to check available domains
 
     const header = [
       { value: 'Domain' },
-      { value: 'Cost' },
+      { value: 'Status' },
       { value: 'Available', header: 'available', formatter: (value: string) => chalk.greenBright(value) },
     ];
     // map through each item so a single word can be shown in item
     const rows = words.map((word: Domain) => {
-      
+
       const array = [word];
-      
-      
+
+
       return array;
     });
 

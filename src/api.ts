@@ -49,7 +49,7 @@ export const searchDomains = async (domain: string): Promise<any> => {
     }
 }
 
-export const checkIfDomainIsAvailable = async (domain: string): Promise<any> => {
+export const checkDomain = async (domain: string): Promise<any> => {
     const url = `https://domainr.p.rapidapi.com/v2/status?mashape-key=${process.env.SMASH_KEY}&domain=${domain}`;
     const options = {
         method: 'GET',
