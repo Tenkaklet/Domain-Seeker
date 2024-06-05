@@ -1,6 +1,6 @@
 {
   "name": "domain-seeker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utilises the user's ability to search for available domains",
   "keywords": [
     "oclif",
