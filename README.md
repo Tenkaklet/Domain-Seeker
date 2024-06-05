@@ -16,3 +16,14 @@ Utilises the user's ability to search for available domains through the CLI.
 
 - [@Tenkaklet](https://www.github.com/tenkaklet)
 
+## To Use
+
+To use this project run
+
+- Go to https://rapidapi.com/domainr/api/domainr and aquire an apikey
+
+```bash
+  export SMASH_KEY="XXXXXXXXXXXXXX1231234321"
+```
+
+**Enjoy**
