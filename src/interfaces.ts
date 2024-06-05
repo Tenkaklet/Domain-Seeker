@@ -1,10 +1,10 @@
 export interface DomainWords {
-    splice: (any);
+    // splice: (any);
     domain: string;
-    word: string[];
-    score: number;
-    available: boolean;
-    registerURL: string;
+    // word: string[];
+    // score: number;
+    // available: boolean;
+    url: string;
     status: string;
 }
 
