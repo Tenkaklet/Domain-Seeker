@@ -10,14 +10,17 @@
   ],
   "homepage": "https://github.com/Tenkaklet/Domain-Seeker",
   "bugs": "https://github.com/Tenkaklet/Domain-Seeker/issues",
-  "repository": "Tenkaklet/Domain-Seeker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tenkaklet/Domain-Seeker.git"
+  },
   "license": "MIT",
   "author": "Max Carlquist",
   "type": "module",
   "exports": "./lib/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "domain-seeker": "./bin/run.js"
+    "domain-seeker": "bin/run.js"
   },
   "files": [
     "/bin",
