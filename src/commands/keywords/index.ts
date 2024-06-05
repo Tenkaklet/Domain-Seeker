@@ -1,5 +1,5 @@
-import { Command, Args, Flags } from "@oclif/core";
-import { fetchWord, searchDomains, checkIfDomainIsAvailable } from "../../api.js";
+import { Command } from "@oclif/core";
+import { fetchWord, searchDomains, checkDomain } from "../../api.js";
 import ora from "ora";
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -9,12 +9,15 @@ import TtyTable from "tty-table";
 import cliProgress from "cli-progress";
 import ansiColors from "ansi-colors";
 const colors = ansiColors;
+import terminalLink from 'terminal-link';
 
 export default class Keywords extends Command {
   domainKeywords: string = '';
   suggestedWords: string[] = [];
   suggestedAvailableWords: string = '';
-  chosenKeywords: string = '';
+  chosenDomain: string = '';
+  domainStatus: string = '';
+  domainAvalable: string = '';
 
 
   // NOTE: domain-seeker keywords check is to instantiate inquirer and the main application.
@@ -121,10 +124,10 @@ export default class Keywords extends Command {
       });
 
       // start the progress bar
-      b1.start(100,0, {
+      b1.start(100, 0, {
         speed: '50'
       });
-      
+
       // update the progress bar
       b1.increment();
       b1.update(100);
@@ -133,39 +136,49 @@ export default class Keywords extends Command {
       this.spinner('Search is complete');
       b1.stop();
 
-      const domainNames = data.results.map((result: Domain) => result.domain);
-      this.checkIfDomainNameIsAvailable(domainNames);
+      const domainNames = data.results.flatMap((result: Domain) => [{ domain: result.domain, url: result.registerURL }]);
       
+      
+      this.checkIfDomainNameIsAvailable(domainNames);
+
     });
   }
-  checkIfDomainNameIsAvailable(domain: string[]) {
-    console.log('domain', domain);
+  async checkIfDomainNameIsAvailable(domain: { domain: string, url: string }[]) {
+    const domaminMap = domain;
     
-    // TODO: check if domain name is avaiable.
-    // TODO: if domain is available, show the cost of the domain.
+    for (const individualDomain of domaminMap) {
+      const domainStatus = await checkDomain(individualDomain.domain);
+      domainStatus.status.map((status: any) => {
+        this.chosenDomain = status.domain;
+        this.domainStatus = status.summary;
+        this.domainAvalable = status.url;
+      });
+    }
+
+    const domsToPush: DomainWords[] = [];
+    for (const individualDomain of domaminMap) {
+      const domainStatus = await checkDomain(individualDomain.domain);
+      domainStatus.status.map((status: any) => {
+        this.domainAvalable = status.url;
+        const url = status.url || individualDomain.url;
+        domsToPush.push({ domain: status.domain, status: status.summary, url });
+      });
+    }
+    this.createTable(domsToPush);
   }
 
   createTable(words: DomainWords[]) {
-    // console.log('words', words);
-
-    // check words against API to see if they are available.
-    // TODO: CLI progress bar to check available domains
 
     const header = [
       { value: 'Domain' },
-      { value: 'Cost' },
-      { value: 'Available', header: 'available', formatter: (value: string) => chalk.greenBright(value) },
+      { value: 'Status' },
+      { value: 'Registrar'},
     ];
     // map through each item so a single word can be shown in item
-    const rows = words.map((word: Domain) => {
-      
-      const array = [word];
-      
-      
+    const rows = words.map((word: any) => {
+      const array = [word.domain, word.status, terminalLink('URL ->', word.url.toString())];
       return array;
     });
-
-    this.log('rows', rows);
 
     const options = {
       borderStyle: "solid",
@@ -175,10 +188,10 @@ export default class Keywords extends Command {
       headerColor: "green",
       align: "center",
       color: "white",
-      width: "80%",
+      width: "100%",
     };
 
-    const table = TtyTable(header, rows, [], options).render();
+    const table = TtyTable(header, rows, options).render();
     console.log(table);
   }
 
